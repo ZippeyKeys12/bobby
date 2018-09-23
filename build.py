@@ -1,22 +1,19 @@
+import json
 import os
 import re
-import json
 import shutil
 from distutils.dir_util import copy_tree
 
-from strip import ZStript
+from data import ZData
 from generate import ZGenerate
 from preprocess import ZPreprocess
+from strip import ZStript
 
-SETTINGS = {"ModName": "Result", "Version": 3.3, "IniFiles": ["ZCONFIG"]}
 
-
-def ZBuild(Settings, Compress):
-    # Build Settings
-    ModName = Settings["ModName"]
+def ZBuild(Name, Compress, Version, IniFiles):
     # Clean build destination
     print("Cleaning Build Destination: ", end="")
-    BuildFolder = "dist/" + ModName
+    BuildFolder = "dist/" + Name
     if os.path.exists(BuildFolder):
         shutil.rmtree(BuildFolder)
 
@@ -33,37 +30,49 @@ def ZBuild(Settings, Compress):
     StartLump = "ZSCRIPT.zsc"
     FullFile = open(StartLump).read()
     FullFile = ZStript(FullFile)
-    FullFile = ZPreprocess(FullFile)
+    FullFile = ZPreprocess(FullFile, ZData(FullFile, IniFiles))
     FullFile = ZGenerate(FullFile)
     if Compress:
         FullFile = ZStript(FullFile, True)
-    FullFile = 'version "{}"'.format(Settings["Version"]) + FullFile
+    if Version:
+        FullFile = 'version "{}"'.format(Version) + FullFile
     os.remove("ZSCRIPT.zsc")
     with open(StartLump, "w+") as Output:
         Output.write(FullFile)
     shutil.rmtree("ZSCRIPT")
     print("Compacting ZScript: Successful")
     os.chdir("../")
-    if os.path.isfile(ModName + ".zip"):
-        os.remove(ModName + ".zip")
-    ArchiveName = ModName + ".pk3"
+    if os.path.isfile(Name + ".zip"):
+        os.remove(Name + ".zip")
+    ArchiveName = Name + ".pk3"
     if os.path.isfile(ArchiveName):
         os.remove(ArchiveName)
 
     # Compression
     if Compress:
         print("Compressing PK3 Archive: ", end="")
-        shutil.make_archive(ModName, "zip", ModName)
-        os.rename(ModName + ".zip", ArchiveName)
-        shutil.rmtree(ModName)
+        shutil.make_archive(Name, "zip", Name)
+        os.rename(Name + ".zip", ArchiveName)
+        shutil.rmtree(Name)
         print("Successful")
 
 
 if __name__ == "__main__":
     from sys import argv
 
+    Name = argv[1]
     Compress = False
-    for arg in argv[1:]:
+    Version = None
+    IniFiles = []
+    for arg in argv[2:]:
         if arg.startswith("-C"):
             Compress = True
-    ZBuild(SETTINGS, Compress)
+        elif arg.startswith("-V"):
+            Version = float(arg[2:])
+        elif arg.startswith("-I"):
+            config = arg[2:]
+            if config.find("[") == -1:
+                IniFiles.append(config)
+            else:
+                IniFiles.extend(arg[3:1].split(","))
+    ZBuild(Name, Compress, Version, IniFiles)

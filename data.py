@@ -6,12 +6,13 @@ from configparser import SafeConfigParser
 
 def ZData(FullFile, IniFiles):
     # INI Loading
-    print("Loading INI Settings")
     Config = SafeConfigParser()
     IniFiles = (Ini + ".ini" for Ini in IniFiles)
-    InisFound = Config.read(IniFiles)
-    for Ini in InisFound:
-        print("  ", Ini)
+    if len(IniFiles):
+        print("Loading INI Settings")
+        InisFound = Config.read(IniFiles)
+        for Ini in InisFound:
+            print("  ", Ini)
 
     # Database Loading
     Database = sqlite3.connect("GAMEDATA.sqlite").cursor()
