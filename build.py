@@ -30,8 +30,9 @@ def ZBuild(Name, Compress, Version, IniFiles):
     StartLump = "ZSCRIPT.zsc"
     FullFile = open(StartLump).read()
     FullFile = ZStript(FullFile)
-    FullFile = ZPreprocess(FullFile, ZData(FullFile, IniFiles))
-    FullFile = ZGenerate(FullFile)
+    Data = ZData(FullFile, IniFiles)
+    FullFile = ZPreprocess(FullFile, Data)
+    FullFile = ZGenerate(FullFile, Data)
     if Compress:
         FullFile = ZStript(FullFile, True)
     if Version:
@@ -62,9 +63,6 @@ if __name__ == "__main__":
 
     Path = argv[1]
     Name = os.path.basename(os.path.normpath(Path))
-    if Path[-1] == "/":
-        Path = Path[:1]
-    Path = Path[: len(Name)]
 
     Compress = False
     Version = None
