@@ -60,7 +60,12 @@ def ZBuild(Name, Compress, Version, IniFiles):
 if __name__ == "__main__":
     from sys import argv
 
-    Name = argv[1]
+    Path = argv[1]
+    Name = os.path.basename(os.path.normpath(Path))
+    if Path[-1] == "/":
+        Path = Path[:1]
+    Path = Path[: len(Name)]
+
     Compress = False
     Version = None
     IniFiles = []
@@ -75,4 +80,5 @@ if __name__ == "__main__":
                 IniFiles.append(config)
             else:
                 IniFiles.extend(arg[3:1].split(","))
+    os.chdir(Path)
     ZBuild(Name, Compress, Version, IniFiles)
