@@ -2,7 +2,6 @@ import json
 import os
 import re
 import shutil
-from distutils.dir_util import copy_tree
 
 from data import ZData
 from generate import ZGenerate
@@ -18,8 +17,7 @@ def ZBuild(Name, Compress, Version, IniFiles):
         shutil.rmtree(BuildFolder)
 
     # Make build destination and duplicate files
-    os.makedirs(BuildFolder)
-    copy_tree("src", BuildFolder)
+    shutil.copytree("src", BuildFolder)
     print("Successful")
 
     # Move to Build Folder

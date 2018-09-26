@@ -40,7 +40,8 @@ def ZData(FullFile, IniFiles):
         for Section in Config:
             for Key, Value in Config.items(Section):
                 if Key[0] in ["i", "d"]:
-                    Temp = eval(compile(parse(Value, mode="eval"), "<string>", "eval"))
+                    Temp = eval(
+                        compile(parse(Value, mode="eval"), "<string>", "eval"))
                     if Key[0] == "i":
                         Temp = int(Temp)
                     Config[Section][Key] = str(Temp)

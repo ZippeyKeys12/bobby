@@ -36,13 +36,13 @@ def ZGenerate(FullFile, Data):
                         if len(Default) < 2:
                             continue
                         if SectionName == "Info":
-                            Call += "//$" + Default[0] + " " + Default[1] + "\n"
+                            Call += "//$" + Default[0] + \
+                                " " + Default[1] + "\n"
                         else:
                             if not SectionName == "Default":
                                 Call += SectionName + "."
-                            Call += (
-                                Default[0] + " " + re.sub("[()]", "", Default[1]) + ";"
-                            )
+                            Call += (Default[0] + " " + re.sub(
+                                "[()]", "", Default[1]) + ";")
         FullFile = Pattern.sub(Call + "}", FullFile, 1)
         Call = Pattern.search(FullFile)
     print("Successful")
@@ -54,7 +54,8 @@ def ZGenerate(FullFile, Data):
         # Marine Armor
         print("    Marine:")
         MAUpgrades = []
-        for MAUpgrade in Data["DATABASE"].execute("SELECT * FROM MarineArmorUpgrades"):
+        for MAUpgrade in Data["DATABASE"].execute(
+                "SELECT * FROM MarineArmorUpgrades"):
             ClassName = "ZMAU_{}".format(MAUpgrade[0])
             MAUpgrades.append(ClassName)
             print("      {}".format(ClassName))
@@ -69,9 +70,7 @@ def ZGenerate(FullFile, Data):
                         return super.Init();
                     }}
                 }}
-            """.format(
-                MAUpgrade
-            )
+            """.format(MAUpgrade)
             FullFile = Zsc + FullFile
         print("    Inserting Marine Upgrades:", end=" ")
         FullFile = FullFile.replace("$ZMAUpgrades", str(MAUpgrades)[1:-1])
@@ -91,10 +90,10 @@ def ZGenerate(FullFile, Data):
         while Call:
             print("      " + Call.group(1))
             FullFile += Template.replace("@KeyType", Call.group(1)).replace(
-                "@ValType", Call.group(2)
-            )
+                "@ValType", Call.group(2))
             FullFile = re.sub(
-                "Map\\s*<\\s*" + Call.group(1) + "\\s*,\\s*" + Call.group(2) + "\\s*>",
+                "Map\\s*<\\s*" + Call.group(1) + "\\s*,\\s*" + Call.group(2) +
+                "\\s*>",
                 "ZDictionary_" + Call.group(1) + "_" + Call.group(2),
                 FullFile,
                 flags=re.IGNORECASE,
