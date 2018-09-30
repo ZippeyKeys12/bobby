@@ -41,7 +41,7 @@ def ZPConfigBlocks(FullFile: str) -> str:
         Replacement = ""
         for Section in Sections:
             Components = re.sub("\\s+", " ", Section).split(":")
-            Replacement += "const {}=#config {};\n".format(
+            Replacement += "const {}=\n#config {}\n;\n".format(
                 Components[0].replace('"', ""), Components[1].replace(
                     ".", '","'))
         FullFile = re.sub("\\[Config\\](\\s*){" + Call.group(2) + "}",
