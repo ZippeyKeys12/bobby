@@ -2,7 +2,7 @@ import re
 
 from strip import ZStript
 
-ConfigPattern = re.compile('"(.+)"\\s*(\\s|,)\\s*"(.+)"')
+ConfigPattern = re.compile(r'"(.+)"\s*(\s|,)\s*"(.+)"')
 
 
 def ZPreprocess(FullFile: str, Data: dict) -> str:
@@ -16,7 +16,7 @@ def ZPreprocess(FullFile: str, Data: dict) -> str:
         "if": ZPIf,
         "ifn": ZPIfN,
     }
-    Pattern = re.compile("#(\\w+)(\\s+(.*))?")
+    Pattern = re.compile(r"#(\w+)(\s+(.*))?")
     Call = Pattern.search(FullFile)
     while Call:
         if (Call.group(1) == "endif" or Call.group(1) == "region"
@@ -34,23 +34,23 @@ def ZPreprocess(FullFile: str, Data: dict) -> str:
 
 def ZPConfigBlocks(FullFile: str) -> str:
     # Config Blocks
-    Pattern = re.compile("\\[Config\\](\\s*){([^}]*)}", re.DOTALL)
+    Pattern = re.compile(r"\[Config\](\s*){([^}]*)}", re.DOTALL)
     Call = Pattern.search(FullFile)
     while Call:
         Sections = Call.group(2).split(",")
         Replacement = ""
         for Section in Sections:
-            Components = re.sub("\\s+", " ", Section).split(":")
+            Components = re.sub(r"\s+", " ", Section).split(":")
             Replacement += "const {}=\n#config {}\n;\n".format(
                 Components[0].replace('"', ""), Components[1].replace(
                     ".", '","'))
-        FullFile = re.sub("\\[Config\\](\\s*){" + Call.group(2) + "}",
+        FullFile = re.sub(r"\[Config\](\s*){" + Call.group(2) + "}",
                           Replacement, FullFile)
         Call = Pattern.search(FullFile)
     return FullFile
 
 
-IncludePattern = re.compile('"(.+)"\\s*')
+IncludePattern = re.compile(r'"(.+)"\s*')
 
 
 def ZPInclude(FullFile: str, Args: str, Data: dict, Defines: dict) -> str:

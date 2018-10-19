@@ -8,10 +8,10 @@ def ZGenerate(FullFile, Data):
 
     # Defaults
     print("  Defaults:", end=" ")
-    Pattern = re.compile("\\[Property\\](\\s*){([^{}]*)}", re.IGNORECASE)
+    Pattern = re.compile(r"\[Property\](\s*){([^{}]*)}", re.IGNORECASE)
     Call = Pattern.search(FullFile)
     while Call:
-        Call = re.sub("\\s+", " ", Call.group(2))
+        Call = re.sub(r"\s+", " ", Call.group(2))
         Sections = Call.split("[")
         Call = "Default{"
         for Section in Sections:
@@ -85,15 +85,15 @@ def ZGenerate(FullFile, Data):
     if os.path.isfile(TemPath):
         print("    ZDictionary")
         Template = open(TemPath).read()
-        Pattern = re.compile("Map\\s*<\\s*(\\w+)\\s*,\\s*(\\w+)\\s*>")
+        Pattern = re.compile(r"Map\s*<\s*(\w+)\s*,\s*(\w+)\s*>")
         Call = Pattern.search(FullFile)
         while Call:
             print("      " + Call.group(1))
             FullFile += Template.replace("@KeyType", Call.group(1)).replace(
                 "@ValType", Call.group(2))
             FullFile = re.sub(
-                "Map\\s*<\\s*" + Call.group(1) + "\\s*,\\s*" + Call.group(2) +
-                "\\s*>",
+                r"Map\s*<\s*" + Call.group(1) + r"\s*,\s*" + Call.group(2) +
+                r"\s*>",
                 "ZDictionary_" + Call.group(1) + "_" + Call.group(2),
                 FullFile,
                 flags=re.IGNORECASE,
